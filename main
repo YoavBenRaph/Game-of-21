@@ -1,0 +1,212 @@
+/***********************************************
+* Author: Yoav Ben Raphael                     *
+* Program Used: C++ in Repl.com                *
+* Purpose: Game of 21 Level 4 in C++ Repl      *     
+*                                              *
+************************************************/
+
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <map>
+
+using namespace std;
+
+int main() {
+    srand((unsigned)time(0));
+
+    int hit = 0, runningTotalUser = 0, runningTotalComp = 0, userDone = 0, compDone = 0, done = 0, userLose = 0, userWin = 0, compLose = 0, compWin = 0, draw = 0;
+    string another, quit;
+
+    map<int, int> deck;
+    for (int i = 1; i <= 13; ++i) {
+        deck[i] = 4; // 4 cards of each number
+    }
+
+    cout << "===============================\n";
+    cout << "===Welcome to the Game of 21===\n";
+    cout << "===============================\n";
+
+    cout << "Instructions: \n -In the game of 21 you have 2 cards dealt to each player, in this case the computer and you. \n -One is face up and one is face down. You can see both of your cards and only one of the computer's cards. ";
+    cout << "\n -You are trying to get as close to 21 without going over.  The person (or computer) closest to 21 wins. ";
+
+    while (userLose < 10 && quit != "quit") {
+        // First user number
+        hit = rand() % 13 + 1; // Random number from 1 to 13 for face cards and Aces
+        while (deck[hit] == 0) {
+            hit = rand() % 13 + 1;
+        }
+        if (hit > 10) {
+            hit = 10; // Face cards have a value of 10
+            cout << "\nYour first card is a face card with a value of 10";
+        }
+        if (hit == 1) {
+            int aceValue;
+            cout << "\nYou drew an Ace. Do you want it to be worth 1 or 11? ";
+            cin >> aceValue;
+            if (aceValue == 11) {
+                hit = 11; // Ace value is 11
+            }
+        }
+        deck[hit]--;
+        runningTotalUser += hit;
+        cout << "\n\n*Your first card is " << hit;
+
+        // Second user number
+        hit = rand() % 13 + 1;
+        while (deck[hit] == 0) {
+            hit = rand() % 13 + 1;
+        }
+        if (hit > 10) {
+            hit = 10; // Face cards have a value of 10
+            cout << "\nYour second card is a face card with a value of 10";
+        }
+        if (hit == 1) {
+            int aceValue;
+            cout << "\nYou drew an Ace. Do you want it to be worth 1 or 11? ";
+            cin >> aceValue;
+            if (aceValue == 11) {
+                hit = 11; // Ace value is 11
+            }
+        }
+        deck[hit]--;
+        runningTotalUser += hit;
+        cout << "\nYour second card is " << hit;
+        cout << "\nYour total is " << runningTotalUser;
+
+        // First computer number
+        hit = rand() % 13 + 1;
+        while (deck[hit] == 0) {
+            hit = rand() % 13 + 1;
+        }
+        if (hit > 10) {
+            hit = 10; // Face cards have a value of 10
+        }
+        deck[hit]--;
+        runningTotalComp += hit;
+        cout << "\nThe computer's first card is " << hit;
+
+        // Second computer number
+        hit = rand() % 13 + 1;
+        while (deck[hit] == 0) {
+            hit = rand() % 13 + 1;
+        }
+        if (hit > 10) {
+            hit = 10; // Face cards have a value of 10
+        }
+        deck[hit]--;
+        runningTotalComp += hit;
+        cout << "\nThe computer's second card is ???";
+
+        do {
+            if (userDone == 0) {
+                cout << "\nDo you want another card? ";
+                cin >> another;
+
+                if (another == "yes") {
+                    hit = rand() % 13 + 1;
+                    while (deck[hit] == 0) {
+                        hit = rand() % 13 + 1;
+                    }
+                    if (hit > 10) {
+                        hit = 10; // Face cards have a value of 10
+                        cout << "\nYour new card is a face card with a value of 10";
+                    }
+                    if (hit == 1) {
+                        int aceValue;
+                        cout << "\nYou drew an Ace. Do you want it to be worth 1 or 11? ";
+                        cin >> aceValue;
+                        if (aceValue == 11) {
+                            if (runningTotalUser + 11 > 21) {
+                                hit = 1; // Change Ace value to 1 to prevent busting
+                            } else {
+                                hit = 11;
+                            }
+                        }
+                    }
+                    deck[hit]--;
+                    runningTotalUser += hit;
+                    cout << "\nYour new card is " << hit << ", and your new total is " << runningTotalUser;
+                } else {
+                    userDone = 1;
+                }
+            }
+
+            if (compDone == 0) {
+                if (runningTotalComp < 16) {
+                    hit = rand() % 13 + 1;
+                    while (deck[hit] == 0) {
+                        hit = rand() % 13 + 1;
+                    }
+                    if (hit > 10) {
+                        hit = 10; // Face cards have a value of 10
+                    }
+                    deck[hit]--;
+                    runningTotalComp += hit;
+                    cout << "\nThe dealer's new card is " << hit;
+                } else {
+                    compDone = 1;
+                }
+            }
+
+            if ((runningTotalUser > 21) || (runningTotalComp > 21)) {
+                userDone = 1;
+                compDone = 1;
+            }
+
+            done = userDone * compDone;
+        } while (done == 0);
+
+        if (runningTotalUser > 21) {
+            cout << "\nYou lose because you went over 21";
+            userLose++;
+            compWin++;
+        } else if (runningTotalComp > 21) {
+            cout << "\nYou won because the dealer went over 21";
+            userWin++;
+            compLose++;
+        } else if (runningTotalUser > runningTotalComp) {
+            cout << "Your running total is: " << runningTotalUser << ".\n";
+            cout << "Dealer's running total is: " << runningTotalComp << ".\n";
+            cout << "\nYou won because you were closer to 21 than the dealer";
+            userWin++;
+            compLose++;
+        } else if (runningTotalUser < runningTotalComp) {
+            cout << "Your running total is: " << runningTotalUser << ".\n";
+            cout << "Dealer's running total is: " << runningTotalComp << ".\n";
+            cout << "\nYou lost because the dealer was closer to 21 than you";
+            userLose++;
+            compWin++;
+        } else if (runningTotalUser == runningTotalComp) {
+            cout << "\nTie! Both of you got the same thing " << runningTotalUser;
+            draw++;
+        }
+
+        runningTotalUser = 0;
+        runningTotalComp = 0;
+
+        userDone = 0;
+        compDone = 0;
+
+        cout << "\nDo you want to continue or quit? ";
+        cin >> quit;
+
+        if (quit == "quit") {
+            userDone = 1;
+        }
+    }
+
+    cout << "\nYou won " << userWin << " time(s), and you lost " << userLose << " time(s)!";
+    cout << "\nThe dealer won " << compWin << " time(s), and the dealer lost " << compLose << " time(s)!";
+    cout << "\nThere were " << draw << " draw games.";
+
+    if (compWin == userWin) {
+        cout << "\nBoth you and the dealer won the same amount of games";
+    } else if (compWin > userWin) {
+        cout << "\nYou lose";
+    } else if (compWin < userWin) {
+        cout << "\nYou win";
+    }
+
+
+}
